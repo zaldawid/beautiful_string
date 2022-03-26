@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.21)
 project(beautiful_string)
 
-add_executable(beautiful_string)
-
 set(target beautiful_string)
+
+add_executable(${target})
+target_include_directories(${target} PRIVATE ./include/bs)
 
 target_sources(${target}
         PRIVATE
@@ -12,12 +13,13 @@ target_sources(${target}
 target_compile_features(${target} PRIVATE cxx_std_20)
 set_target_properties(${target} PROPERTIES CXX_EXTENSIONS OFF)
 
+
 # Set options for gnu-like
 target_compile_options(${target} PRIVATE
         # set warnings for all build types
         $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wall -Wextra -Wpedantic -Werror -Wconversion -Wfloat-equal
         -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wformat=2 -Wlogical-not-parentheses
-        -Wmissing-declarations -Wmissing-field-initializers -Wmissing-format-attribute -Walloca -Wmissing-include-dirs -Wmissing-noreturn -Wnested-externs -Wpacked -Wpointer-arith -Wundef
+        -Wmissing-declarations -Wmissing-field-initializers -Wmissing-format-attribute -Walloca -Wmissing-include-dirs -Wmissing-noreturn -Wpacked -Wpointer-arith -Wundef
         -Wredundant-decls -Wshadow -Wstack-protector -Wswitch-enum -Wwrite-strings>
         # debug optimisation in Debug
         $<$<AND:$<CXX_COMPILER_ID:GNU,Clang,AppleClang>,$<CONFIG:Release>>:-O3>
@@ -55,3 +57,18 @@ if (HAS_ASAN AND USE_ASAN)
     target_compile_options(${target} PRIVATE -fsanitize=address)
     target_link_options(${target} PRIVATE -fsanitize=address)
 endif ()
+
+# download and populate Google Test from github
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG        release-1.11.0
+)
+
+# for Windows: prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(googletest)
+
+add_subdirectory(tests)

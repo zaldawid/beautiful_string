@@ -1,15 +1,11 @@
+
 #include <iostream>
 #include <cstring>
-#include "string.h"
 
-struct test{
-    void f(){
-        std::cout << "TEST";
-    }
-};
+#include "bstring.h"
 
 int main() {
-        bs::string str{"Alice ❤ bob! "};
+        bs::bstring str{"Alice ❤ bob! "};
 
         auto moved = std::move(str);
 

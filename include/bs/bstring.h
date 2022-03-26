@@ -2,8 +2,8 @@
 // Created by dza02 on 3/23/2022.
 //
 
-#ifndef BEAUTIFUL_STRING_STRING_H
-#define BEAUTIFUL_STRING_STRING_H
+#ifndef BEAUTIFUL_STRING_BSTRING_H
+#define BEAUTIFUL_STRING_BSTRING_H
 
 #include <cstdio>
 #include <cstring>
@@ -16,105 +16,100 @@
 
 namespace bs {
     namespace detail{
-//        template <typename Allocator>
-//        concept allocator_c = requires (Allocator allocator){
-//
-//        };
     }
 
 
 #define DP() printf("%s\n", __PRETTY_FUNCTION__)
 
-    template <typename StorageType, typename SizeType>
-    requires std::integral<StorageType> && std::unsigned_integral<SizeType>
-    struct dynamic_store {
-        using storage_type = StorageType;
-        using size_type = SizeType;
-
-        // allocated storage in bytes
-        size_type m_capacity;
-        // length in code points (- '\0')
-        size_type m_length;
-        // used storage in bytes
-        size_type m_size;
-
-        storage_type *m_str;
-    };
-
-    template <typename StorageType, typename SizeType>
-    requires std::integral<StorageType> && std::unsigned_integral<SizeType>
-    struct static_store {
-        using storage_type = StorageType;
-        using size_type = SizeType;
-
-        constexpr static size_type s_buffer_capacity = ( sizeof(dynamic_store<StorageType, SizeType>) - 1 ) / sizeof(StorageType);
-
-
-        union {
-            struct {
-                std::uint8_t m_size;
-                std::uint8_t m_length;
-            } m;
-            [[maybe_unused]]
-            StorageType _m_dummy;
-        } m;
-        StorageType m_buffer[s_buffer_capacity];
-    };
-
+//    template <typename StorageType, typename SizeType>
+//    requires std::integral<StorageType> && std::unsigned_integral<SizeType>
+//    struct dynamic_store {
+//        using storage_type = StorageType;
+//        using size_type = SizeType;
+//
+//        // allocated storage in bytes
+//        size_type m_capacity;
+//        // length in code points (- '\0')
+//        size_type m_length;
+//        // used storage in bytes
+//        size_type m_size;
+//
+//        storage_type *m_str;
+//    };
+//
+//    template <typename StorageType, typename SizeType>
+//    requires std::integral<StorageType> && std::unsigned_integral<SizeType>
+//    struct static_store {
+//        using storage_type = StorageType;
+//        using size_type = SizeType;
+//
+//        constexpr static size_type s_buffer_capacity = ( sizeof(dynamic_store<StorageType, SizeType>) - 1 ) / sizeof(StorageType);
+//
+//        union {
+//            struct {
+//                std::uint8_t m_size;
+//                std::uint8_t m_length;
+//            } m;
+//            [[maybe_unused]]
+//            StorageType _m_dummy;
+//        } m;
+//        StorageType m_buffer[s_buffer_capacity];
+//    };
 
 
-    template <typename StorageType, typename SizeType>
-    requires std::integral<StorageType> && std::unsigned_integral<SizeType>
-    union store {
-        using size_type = SizeType;
-        using static_size_type = std::uint8_t;
-        dynamic_store<StorageType, SizeType> m_dynamic;
-        static_store<StorageType, SizeType> m_static;
 
-        // dynamic capacity is always even
-        constexpr static std::uint8_t s_static_mask{ std::endian::native == std::endian::little? 0x01 : 0x80 };
-        constexpr static size_type s_dynamic_mask { std::endian::native == std::endian::little? size_type{0x01} : ((~size_type{0}) >> 1) };
-
-        constexpr bool is_dynamic() const {
-            return m_static.m.m.m_size & s_static_mask;
-        }
-
-        constexpr bool is_static() const {
-            return !(m_static.m.m.m_size & s_static_mask);
-        }
-
-        constexpr void set_static_size(size_type sz) {
-            m_static.m.m.m_size = static_size_type(sz << 1);
-        }
-
-        constexpr size_type get_static_size() const {
-            return size_type (m_static.m.m.m_size >> 1);
-        }
-
-        constexpr void set_dynamic_size(size_type sz){
-            m_dynamic.m_size = sz;
-        }
-
-        constexpr size_type get_dynamic_size() const {
-            return m_dynamic.m_size;
-        }
-
-        constexpr size_type get_size() const {
-            return is_static() ? get_static_size() : get_dynamic_size();
-        }
-
-        constexpr void set_dynamic_capacity(size_type cap){
-            m_dynamic.m_capacity = cap | s_dynamic_mask;
-        }
-
-        constexpr size_type get_dynamic_capacity() const {
-            return m_dynamic.m_capacity & ~s_dynamic_mask;
-        }
-
-        constexpr size_type get_capacity() const {
-            return is_static() ? m_static.s_buffer_capacity : get_dynamic_capacity();
-        }
-    };
+//    template <typename StorageType, typename SizeType>
+//    requires std::integral<StorageType> && std::unsigned_integral<SizeType>
+//    union store {
+//        using size_type = SizeType;
+//        using static_size_type = std::uint8_t;
+//        dynamic_store<StorageType, SizeType> m_dynamic;
+//        static_store<StorageType, SizeType> m_static;
+//
+//        // dynamic capacity is always even
+//        constexpr static std::uint8_t s_static_mask{ std::endian::native == std::endian::little? 0x01 : 0x80 };
+//        constexpr static size_type s_dynamic_mask { std::endian::native == std::endian::little? size_type{0x01} : ((~size_type{0}) >> 1) };
+//
+//        constexpr bool is_dynamic() const {
+//            return m_static.m.m.m_size & s_static_mask;
+//        }
+//
+//        constexpr bool is_static() const {
+//            return !(m_static.m.m.m_size & s_static_mask);
+//        }
+//
+//        constexpr void set_static_size(size_type sz) {
+//            m_static.m.m.m_size = static_size_type(sz << 1);
+//        }
+//
+//        constexpr size_type get_static_size() const {
+//            return size_type (m_static.m.m.m_size >> 1);
+//        }
+//
+//        constexpr void set_dynamic_size(size_type sz){
+//            m_dynamic.m_size = sz;
+//        }
+//
+//        constexpr size_type get_dynamic_size() const {
+//            return m_dynamic.m_size;
+//        }
+//
+//        constexpr size_type get_size() const {
+//            return is_static() ? get_static_size() : get_dynamic_size();
+//        }
+//
+//        constexpr void set_dynamic_capacity(size_type cap){
+//            m_dynamic.m_capacity = cap | s_dynamic_mask;
+//        }
+//
+//        constexpr size_type get_dynamic_capacity() const {
+//            return m_dynamic.m_capacity & ~s_dynamic_mask;
+//        }
+//
+//        constexpr size_type get_capacity() const {
+//            return is_static() ? m_static.s_buffer_capacity : get_dynamic_capacity();
+//        }
+//    };
 
     template <typename Storage_type=char, typename Allocator=typename std::allocator<Storage_type>, typename Size_type = std::size_t>
     struct string_base{
@@ -272,7 +267,7 @@ namespace bs {
     };
 
     template <typename Storage_type=char, typename Allocator=typename std::allocator<Storage_type>, typename Size_type = std::size_t>
-    class string: private string_base<Storage_type, Allocator, Size_type> {
+    class bstring: private string_base<Storage_type, Allocator, Size_type> {
     public:
 
         using storage_type = Storage_type;
@@ -283,33 +278,27 @@ namespace bs {
         using size_type = Size_type;
         using allocator_type = Allocator;
 
-        constexpr string() noexcept(noexcept( Allocator() )) :
-            string( Allocator() )
+        using string_base<Storage_type, Allocator, Size_type>::data;
+
+        constexpr bstring() noexcept(noexcept( Allocator() )) :
+            bstring(Allocator() )
             {}
 
-        explicit constexpr string( const Allocator& alloc ) noexcept:
-            string("", alloc)
+        explicit constexpr bstring(const Allocator& alloc) noexcept:
+            bstring("", alloc)
             {}
 
-        constexpr string( const char* str, const Allocator& allocator = Allocator{} ):
+        constexpr bstring(const char* str, const Allocator& allocator = Allocator{}):
             _base{ std::strlen(str) + 1, allocator }{
             _base::template assign_from<char>(str, _base::size());
-        }
-
-        constexpr const_pointer data() const {
-            return _base::data();
-        }
-
-        constexpr pointer data() {
-            return _base::data();
         }
 
     private:
         using _base = string_base<Storage_type, Allocator, Size_type>;
     };
 
-    string(char*) -> string<char>;
+    bstring(char*) -> bstring<char>;
 
 
 }
-#endif //BEAUTIFUL_STRING_STRING_H
+#endif //BEAUTIFUL_STRING_BSTRING_H
