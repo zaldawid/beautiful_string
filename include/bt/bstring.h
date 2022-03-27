@@ -1,9 +1,35 @@
-//
-// Created by dza02 on 3/23/2022.
-//
+/*
+MIT License
 
-#ifndef BEAUTIFUL_STRING_BSTRING_H
-#define BEAUTIFUL_STRING_BSTRING_H
+Copyright (c) 2022 Dawid Zalewski
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Changelog:
+
+ 2022-03-26: Initial version, not much here.
+ 2022-03-27: Fixes to CMakeLists and making bt a library
+
+ */
+
+#ifndef BEAUTIFUL_TEXT_BSTRING_H
+#define BEAUTIFUL_TEXT_BSTRING_H
 
 #include <cstdio>
 #include <cstring>
@@ -12,9 +38,10 @@
 #include <concepts>
 #include <bit>
 
-#include <cstdint>
+namespace bt {
 
-namespace bs {
+#include <cstdint>
+    
     namespace detail{
     }
 
@@ -267,7 +294,7 @@ namespace bs {
     };
 
     template <typename Storage_type=char, typename Allocator=typename std::allocator<Storage_type>, typename Size_type = std::size_t>
-    class bstring: private string_base<Storage_type, Allocator, Size_type> {
+    class string: private string_base<Storage_type, Allocator, Size_type> {
     public:
 
         using storage_type = Storage_type;
@@ -280,15 +307,15 @@ namespace bs {
 
         using string_base<Storage_type, Allocator, Size_type>::data;
 
-        constexpr bstring() noexcept(noexcept( Allocator() )) :
-            bstring(Allocator() )
+        constexpr string() noexcept(noexcept( Allocator() )) :
+            string(Allocator() )
             {}
 
-        explicit constexpr bstring(const Allocator& alloc) noexcept:
-            bstring("", alloc)
+        explicit constexpr string(const Allocator& alloc) noexcept:
+            string("", alloc)
             {}
 
-        constexpr bstring(const char* str, const Allocator& allocator = Allocator{}):
+        constexpr string(const char* str, const Allocator& allocator = Allocator{}):
             _base{ std::strlen(str) + 1, allocator }{
             _base::template assign_from<char>(str, _base::size());
         }
@@ -297,8 +324,8 @@ namespace bs {
         using _base = string_base<Storage_type, Allocator, Size_type>;
     };
 
-    bstring(char*) -> bstring<char>;
+    string(char*) -> string<char>;
 
 
 }
-#endif //BEAUTIFUL_STRING_BSTRING_H
+#endif //BEAUTIFUL_TEXT_BSTRING_H

@@ -1,11 +1,12 @@
 
 #include <iostream>
-#include <cstring>
 
 #include "bstring.h"
 
+#include <cstring>
+
 int main() {
-        bs::bstring str{"Alice ❤ bob! "};
+        bt::string str{"Alice ❤ bob! "};
 
         auto moved = std::move(str);
 

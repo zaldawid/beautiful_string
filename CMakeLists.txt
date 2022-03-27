@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.21)
 project(beautiful_string)
 
-set(target beautiful_string)
+add_subdirectory(./include/bt)
 
+set(target beautiful_string)
 add_executable(${target})
-target_include_directories(${target} PRIVATE ./include/bs)
+#target_include_directories(${target} PRIVATE include/bt)
 
 target_sources(${target}
         PRIVATE
         main.cpp)
+
+target_link_libraries(${target} PRIVATE beautiful_text)
 
 target_compile_features(${target} PRIVATE cxx_std_20)
 set_target_properties(${target} PROPERTIES CXX_EXTENSIONS OFF)
